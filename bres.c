@@ -6,7 +6,7 @@
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/01 16:23:38 by dboudy            #+#    #+#             */
-/*   Updated: 2016/02/15 15:35:07 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/02/16 16:55:38 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,14 @@
 static	void	bres_dx_sup(t_all *all)
 {
 	int	i;
+	int j;
 	int e;
 	int inc1;
 	int inc2;
 
 	i = 0;
-	mlx_pixel_put(MLX, WIN, all->apoint->x1, all->apoint->y1, COLOR);
+	j = all->apoint->y1 * SIZE_LINE + all->apoint->x1 * BPP;
+	((int *)DATA)[j] = COLOR;
 	e = 2 * all->abres->dy - all->abres->dx;
 	inc1 = 2 * (all->abres->dy - all->abres->dx);
 	inc2 = 2 * all->abres->dy;
@@ -34,7 +36,8 @@ static	void	bres_dx_sup(t_all *all)
 		else
 			e += inc2;
 		all->apoint->x1 += all->abres->incx;
-		mlx_pixel_put(MLX, WIN, all->apoint->x1, all->apoint->y1, COLOR);
+		j = all->apoint->y1 * SIZE_LINE + all->apoint->x1 * BPP;
+		((int *)DATA)[j] = COLOR;
 		i++;
 	}
 }
@@ -42,12 +45,14 @@ static	void	bres_dx_sup(t_all *all)
 static void		bres_else(t_all *all)
 {
 	int	i;
+	int j;
 	int	e;
 	int inc1;
 	int inc2;
 
 	i = 0;
-	mlx_pixel_put(MLX, WIN, all->apoint->x1, all->apoint->y1, COLOR);
+	j = all->apoint->y1 * SIZE_LINE + all->apoint->x1 * BPP;
+	((int *)DATA)[j] = COLOR;
 	e = 2 * all->abres->dx - all->abres->dy;
 	inc1 = 2 * (all->abres->dx - all->abres->dy);
 	inc2 = 2 * all->abres->dx;
@@ -61,7 +66,8 @@ static void		bres_else(t_all *all)
 		else
 			e += inc2;
 		all->apoint->y1 += all->abres->incy;
-		mlx_pixel_put(MLX, WIN, all->apoint->x1, all->apoint->y1, COLOR);
+		j = all->apoint->y1 * SIZE_LINE + all->apoint->x1 * BPP;
+		((int *)DATA)[j] = COLOR;
 		i++;
 	}
 }

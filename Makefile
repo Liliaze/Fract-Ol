@@ -6,7 +6,7 @@
 #    By: dboudy <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/11/24 10:53:12 by dboudy            #+#    #+#              #
-#    Updated: 2016/02/15 18:39:46 by dboudy           ###   ########.fr        #
+#    Updated: 2016/02/16 14:06:13 by dboudy           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ PATH_INC = libft/includes/
 CFLAGS = -Ofast -Wall -Werror -Wextra
 FLAGS2 = -lmlx -framework OpenGL -framework AppKit
 HEADERS = ./includes/
-SRC = main.c bres.c bres_paint.c bres_del.c draw_cercle.c\
+SRC = main.c bres.c hook.c tools.c\
 
 OBJS = $(patsubst %.c,%.o,$(addprefix $(PATH_SRC), $(SRC)))
 

@@ -6,7 +6,7 @@
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/01 11:52:57 by dboudy            #+#    #+#             */
-/*   Updated: 2016/02/15 18:10:16 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/02/16 16:56:24 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,18 @@
 
 # define WIN		all->awin->win
 # define MLX		all->awin->mlx
+# define IMG		all->aimg->image
+# define DATA		all->aimg->image_data
+# define BPP		all->aimg->bpp
+# define SIZE_LINE	all->aimg->size_line
+# define ENDIAN		all->aimg->endian
 # define WINW		all->awin->width
 # define WINH		all->awin->height
-# define MAP		all->amap->map
-# define NAME		all->amap->name
-# define TNAME		all->amap->the_name
+# define NAME		all->afrac->name
 # define COLOR		all->apoint->color1
-# define ECART		all->apoint->ecart_x
-# define COEFZ		all->apoint->coef_z
-# define COEFY		all->apoint->coef_y
-# define Z1			ft_atoi(all->amap->map[y][x]) * COEFZ
-# define Z2X		ft_atoi(all->amap->map[y][x + 1]) * COEFZ
-# define Z2Y		ft_atoi(all->amap->map[y + 1][x]) * COEFZ
-# define ZMAX		all->amap->z_max
-# define ZMIN		all->amap->z_min
-# define SW			all->amap->scalew
-# define SH			all->amap->scaleh
+# define R			all->apoint->r
+# define G			all->apoint->g
+# define B			all->apoint->b
 
 # define BLACK		0x00000000
 # define BROWN		0x00663300
@@ -73,16 +69,24 @@
 # include <math.h>
 # include <stdlib.h>
 # include "../libft/includes/libft.h"
-# include <stdio.h>
+# include <stdio.h> //a sup a la fin
 
 typedef struct		s_win
 {
 	void			*mlx;
 	void			*win;
-	void			*image;
 	int				width;
 	int				height;
 }					t_win;
+
+typedef struct		s_image
+{
+	void			*image;
+	char			*image_data;
+	int				bpp;
+	int				size_line;
+	int				endian;
+}					t_image;
 
 typedef struct		s_point
 {
@@ -93,21 +97,10 @@ typedef struct		s_point
 	int				y2;
 	int				z2;
 	int				color1;
-	int				color2;
-	float			coef_x;
-	float			coef_z;
-	float			coef_y;
+	int				r;
+	int				g;
+	int				b;
 }					t_point;
-
-typedef struct		s_map
-{
-	int				scaleh;
-	int				scalew;
-	int				z_max;
-	int				z_min;
-	int				nb_x;
-	int				nb_y;
-}					t_map;
 
 typedef struct		s_bres
 {
@@ -115,22 +108,28 @@ typedef struct		s_bres
 	int				dy;
 	int				incx;
 	int				incy;
-	int				size_bres;
 }					t_bres;
+
+typedef struct		s_frac
+{
+	char			*name;
+}					t_frac;
 
 typedef struct		s_all
 {
 	t_point			*apoint;
-	t_map			*amap;
 	t_win			*awin;
+	t_image			*aimg;
 	t_bres			*abres;
-	int				in_menu;
+	t_frac			*afrac;
 	int				br;
 }					t_all;
 
 int		bres(t_all *all);
-int		bres_paint(t_all *all);
-int		bres_del(t_all *all);
-void	draw_cercle(t_all *all);
+void	ft_loop(t_all *all);
+void	error(t_all *all, char *text, int code_error);
+void	find_pixel(t_all *all);
+int		clear_image(t_all *all);
+int		new_image(t_all *all);
 
 #endif
