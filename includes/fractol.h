@@ -6,7 +6,7 @@
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/01 11:52:57 by dboudy            #+#    #+#             */
-/*   Updated: 2016/02/16 16:56:24 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/03/04 18:25:25 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,15 @@
 # define BPP		all->aimg->bpp
 # define SIZE_LINE	all->aimg->size_line
 # define ENDIAN		all->aimg->endian
+# define LAST_PIXEL	all->aimg->last_pixel
 # define WINW		all->awin->width
 # define WINH		all->awin->height
-# define NAME		all->afrac->name
-# define COLOR		all->apoint->color1
-# define R			all->apoint->r
-# define G			all->apoint->g
-# define B			all->apoint->b
+# define ZOOMX		all->ahook->zoom_x
+# define ZOOMY		all->ahook->zoom_y
+# define COLOR		all->apixel->color1
+# define AF			all->afrac
+# define AP			all->apixel
+# define AH			all->ahook
 
 # define BLACK		0x00000000
 # define BROWN		0x00663300
@@ -61,15 +63,32 @@
 # define MORE		69
 # define SPACE		49
 # define ONE		83
+# define TWO		84
+# define THREE		85
+# define FOUR		86
+# define FIVE		87
+# define SIX		88
+# define SEVEN		89
+# define EIGHT		91
 # define NINE		92
-# define ONE2		18
-# define NINE2		28
+//# define ONE2		18
+//# define TWO2		19
+//# define THREE2		20
+//# define FOUR2		21
 
 # include <mlx.h>
 # include <math.h>
 # include <stdlib.h>
 # include "../libft/includes/libft.h"
 # include <stdio.h> //a sup a la fin
+# include <time.h>
+
+typedef struct		s_paint
+{
+	void			*mlx;
+	void			*win;
+
+}					t_paint;
 
 typedef struct		s_win
 {
@@ -86,50 +105,84 @@ typedef struct		s_image
 	int				bpp;
 	int				size_line;
 	int				endian;
+	int				last_pixel;
 }					t_image;
 
-typedef struct		s_point
+typedef struct		s_pixel
 {
-	int				x1;
-	int				y1;
-	int				z1;
-	int				x2;
-	int				y2;
-	int				z2;
 	int				color1;
-	int				r;
-	int				g;
-	int				b;
-}					t_point;
+	int				pixel;
+	int				x;
+	int				y;
+}					t_pixel;
 
-typedef struct		s_bres
+typedef struct		s_hook
 {
-	int				dx;
-	int				dy;
-	int				incx;
-	int				incy;
-}					t_bres;
+	int				init_fractal;
+	int				active_motion;
+	int				active_color;
+	int				active_color_paint;
+	int				coef_triangle;
+	float			motion_x;
+	float			motion_y;
+	float			mouse_x;
+	float			mouse_y;
+	float			move_x;
+	float			move_y;
+	float			zoom_x;
+	float			zoom_y;
+}					t_hook;
 
 typedef struct		s_frac
 {
-	char			*name;
+	int				iter_max;
+	int				iter;
+	int				choose_fractal;
+	float			x1;
+	float			x2;
+	float			x3;
+	float			y1;
+	float			y2;
+	float			y3;
+	int				padding;
+	double			c_r;
+	double			c_i;
+	double			z_r;
+	double			z_i;
 }					t_frac;
 
 typedef struct		s_all
 {
-	t_point			*apoint;
+	t_paint			*apaint;
 	t_win			*awin;
 	t_image			*aimg;
-	t_bres			*abres;
 	t_frac			*afrac;
-	int				br;
+	t_pixel			*apixel;
+	t_hook			*ahook;
+	int				in_menu;
+	int				padding;
 }					t_all;
 
-int		bres(t_all *all);
-void	ft_loop(t_all *all);
-void	error(t_all *all, char *text, int code_error);
-void	find_pixel(t_all *all);
+double	p(double nb, int power);
+int		ft_loop(t_all *all);
+int		error(t_all *all, char *text, int code_error);
+//void	create_paint(t_all * all);
+int		color_pixel(t_all *all, int data);
+int		launch_menu(t_all *all);
 int		clear_image(t_all *all);
 int		new_image(t_all *all);
+int		launch_fractale(t_all *all, int key);
+int		refresh(t_all *all);
+int		mandelbrot(t_all *all);
+int		mandelbrot2(t_all *all);
+int		mandelbrot3(t_all *all);
+int		julia(t_all *all);
+int		julia2(t_all *all);
+int		julia3(t_all *all);
+int		burnship(t_all *all);
+int		triangle(t_all *all);
+int		to_zoom(t_all *all, int key);
+int		move_fractale(t_all *all, int key);
+int		move_fractale2(t_all *all, int key);
 
 #endif
