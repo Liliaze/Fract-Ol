@@ -1,28 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fdf.h                                              :+:      :+:    :+:   */
+/*   fractol.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/01 11:52:57 by dboudy            #+#    #+#             */
-/*   Updated: 2016/03/04 18:25:25 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/03/07 12:30:39 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FDF_H
-# define FDF_H
+#ifndef FRACTOL_H
+# define FRACTOL_H
+
+# include <mlx.h>
+# include <math.h>
+# include <stdlib.h>
+# include "../libft/includes/libft.h"
+# include <time.h>
 
 # define WIN		all->awin->win
 # define MLX		all->awin->mlx
+# define WINW		all->awin->width
+# define WINH		all->awin->height
 # define IMG		all->aimg->image
+# define IMGW		all->aimg->image_width
+# define IMGH		all->aimg->image_height
 # define DATA		all->aimg->image_data
 # define BPP		all->aimg->bpp
 # define SIZE_LINE	all->aimg->size_line
 # define ENDIAN		all->aimg->endian
 # define LAST_PIXEL	all->aimg->last_pixel
-# define WINW		all->awin->width
-# define WINH		all->awin->height
 # define ZOOMX		all->ahook->zoom_x
 # define ZOOMY		all->ahook->zoom_y
 # define COLOR		all->apixel->color1
@@ -65,30 +73,9 @@
 # define ONE		83
 # define TWO		84
 # define THREE		85
-# define FOUR		86
-# define FIVE		87
-# define SIX		88
-# define SEVEN		89
-# define EIGHT		91
-# define NINE		92
-//# define ONE2		18
-//# define TWO2		19
-//# define THREE2		20
-//# define FOUR2		21
-
-# include <mlx.h>
-# include <math.h>
-# include <stdlib.h>
-# include "../libft/includes/libft.h"
-# include <stdio.h> //a sup a la fin
-# include <time.h>
-
-typedef struct		s_paint
-{
-	void			*mlx;
-	void			*win;
-
-}					t_paint;
+# define ONE2		18
+# define TWO2		19
+# define THREE2		20
 
 typedef struct		s_win
 {
@@ -96,12 +83,15 @@ typedef struct		s_win
 	void			*win;
 	int				width;
 	int				height;
+	int				id;
 }					t_win;
 
 typedef struct		s_image
 {
 	void			*image;
 	char			*image_data;
+	int				image_width;
+	int				image_height;
 	int				bpp;
 	int				size_line;
 	int				endian;
@@ -121,10 +111,9 @@ typedef struct		s_hook
 	int				init_fractal;
 	int				active_motion;
 	int				active_color;
-	int				active_color_paint;
+	int				button1;
 	int				coef_triangle;
-	float			motion_x;
-	float			motion_y;
+	float			motion;
 	float			mouse_x;
 	float			mouse_y;
 	float			move_x;
@@ -135,54 +124,55 @@ typedef struct		s_hook
 
 typedef struct		s_frac
 {
-	int				iter_max;
-	int				iter;
+	char			*name;
 	int				choose_fractal;
+	int				iter;
+	int				iter_max;
+	int				power;
 	float			x1;
 	float			x2;
 	float			x3;
 	float			y1;
 	float			y2;
 	float			y3;
-	int				padding;
-	double			c_r;
-	double			c_i;
-	double			z_r;
-	double			z_i;
+	double			cr;
+	double			ci;
+	double			zr;
+	double			zi;
+	double			t;
 }					t_frac;
 
 typedef struct		s_all
 {
-	t_paint			*apaint;
 	t_win			*awin;
 	t_image			*aimg;
 	t_frac			*afrac;
 	t_pixel			*apixel;
 	t_hook			*ahook;
 	int				in_menu;
-	int				padding;
 }					t_all;
 
-double	p(double nb, int power);
-int		ft_loop(t_all *all);
-int		error(t_all *all, char *text, int code_error);
-//void	create_paint(t_all * all);
-int		color_pixel(t_all *all, int data);
-int		launch_menu(t_all *all);
-int		clear_image(t_all *all);
-int		new_image(t_all *all);
-int		launch_fractale(t_all *all, int key);
-int		refresh(t_all *all);
-int		mandelbrot(t_all *all);
-int		mandelbrot2(t_all *all);
-int		mandelbrot3(t_all *all);
-int		julia(t_all *all);
-int		julia2(t_all *all);
-int		julia3(t_all *all);
-int		burnship(t_all *all);
-int		triangle(t_all *all);
-int		to_zoom(t_all *all, int key);
-int		move_fractale(t_all *all, int key);
-int		move_fractale2(t_all *all, int key);
+int					ft_loop(t_all *all);
+int					color_pixel(t_all *all, int data);
+int					launch_menu(t_all *all);
+int					clear_image(t_all *all);
+int					launch_fractale_or_menu(t_all *all);
+int					refresh(t_all *all);
+int					mandelbrot(t_all *all);
+int					mandelbrot2(t_all *all);
+int					mandelbrot3(t_all *all);
+int					julia(t_all *all);
+int					julia2(t_all *all);
+int					julia3(t_all *all);
+int					burnship(t_all *all);
+int					triangle(t_all *all);
+int					to_zoom(t_all *all, int key);
+int					change_nb_iter_or_power(t_all *all, int key);
+int					move_fractale(t_all *all, int key);
+int					move_fractale2(t_all *all, int key);
+void				draw_choose_color(t_all *all);
+void				choose_color(t_all *all);
+void				init_data(t_all *all);
+void				error(char *text, int code_error);
 
 #endif

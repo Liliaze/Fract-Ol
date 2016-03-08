@@ -1,31 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   draw_cercle.c                                      :+:      :+:    :+:   */
+/*   init_frac.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/02/15 18:08:21 by dboudy            #+#    #+#             */
-/*   Updated: 2016/02/15 18:39:34 by dboudy           ###   ########.fr       */
+/*   Created: 2016/03/05 14:13:56 by dboudy            #+#    #+#             */
+/*   Updated: 2016/03/07 11:55:04 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void	draw_cercle(t_all *all)
+void	init_data(t_all *all)
 {
-	int	y;
-	int	x;
-	int	d;
-
-	d = all->abres->size_bres;
-	y = d;
-	while (--y > 0)
-	{
-		x = d;
-		while (--x > 0)
-		{
-				mlx_pixel_put(MLX, WIN, all->apoint->x1 + x / 2, all->apoint->y1 + y / 2, COLOR);
-		}
-	}
+	COLOR = BLUE;
+	ZOOMX = 1;
+	ZOOMY = 1;
+	AF->power = 1;
+	AH->init_fractal = 1;
+	AH->coef_triangle = 1;
+	AH->active_motion = 0;
+	AH->active_color = 0;
+	AH->motion = 0;
+	AH->mouse_x = 0;
+	AH->mouse_y = 0;
+	AH->move_x = 0;
+	AH->move_y = 0;
 }

@@ -6,17 +6,17 @@
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/03 15:42:25 by dboudy            #+#    #+#             */
-/*   Updated: 2016/03/04 16:36:28 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/03/07 11:52:59 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-static int		init_fractale(t_all *all)
+static int	init_fractale(t_all *all)
 {
 	AF->iter_max = 350;
-	ZOOMX = WINW / 2.7;
-	ZOOMY = WINH / 2.4;
+	ZOOMX = IMGW / 2.7;
+	ZOOMY = IMGH / 2.4;
 	AF->x1 = -2.1;
 	AF->x2 = 0.6;
 	AF->y1 = -1.2;
@@ -24,40 +24,92 @@ static int		init_fractale(t_all *all)
 	return (0);
 }
 
-static int		init2(t_all	*all)
+static int	init2(t_all *all)
 {
-	AF->c_r = (AP->x / ZOOMX + AF->x1);
-	AF->c_i = (AP->y / ZOOMY + AF->y1);
-	AF->z_r = 0 + AH->motion_x;
-	AF->z_i = 0 + AH->motion_x;
+	AF->cr = (AP->x / ZOOMX + AF->x1);
+	AF->ci = (AP->y / ZOOMY + AF->y1);
+	AF->zr = 0 + AH->motion;
+	AF->zi = 0 + AH->motion;
 	AF->iter = -1;
 	return (0);
 }
 
-int		mandelbrot(t_all *all)
+int			mandelbrot(t_all *all)
 {
-	double	tmp;
-
 	if (AH->init_fractal)
 		init_fractale(all);
 	AH->init_fractal = 0;
 	AP->x = -1;
-	while (++(AP->x) < WINW)
+	while (++(AP->x) < IMGW)
 	{
 		AP->y = -1;
-		while (++(AP->y) < WINH)
+		while (++(AP->y) < IMGH)
 		{
 			init2(all);
-			while (sqrt(AF->z_r * AF->z_r + AF->z_i * AF->z_i) < 4
+			while (sqrt(AF->zr * AF->zr + AF->zi * AF->zi) < 4
 					&& ++(AF->iter) < AF->iter_max)
 			{
-				tmp = AF->z_r;
-				AF->z_r = (AF->z_r * AF->z_r - AF->z_i * AF->z_i + AF->c_r);
-				AF->z_i = (2 * AF->z_i * tmp + AF->c_i);
+				AF->t = AF->zr;
+				AF->zr = (AF->zr * AF->zr - AF->zi * AF->zi + AF->cr);
+				AF->zi = (2 * AF->zi * AF->t + AF->ci);
 			}
-			if (AF->iter != AF->iter_max && (AP->pixel =
-						(AP->y * SIZE_LINE + AP->x * BPP)) < LAST_PIXEL && AP->pixel >= 0)
-				((int *)DATA)[AP->pixel] = AF->iter * COLOR;
+			if (AF->iter != AF->iter_max)
+				color_pixel(all, AF->iter);
+		}
+	}
+	return (0);
+}
+
+int			mandelbrot2(t_all *all)
+{
+	if (AH->init_fractal)
+		init_fractale(all);
+	AP->x = -1;
+	while (++(AP->x) < IMGW)
+	{
+		AP->y = -1;
+		while (++(AP->y) < IMGH)
+		{
+			init2(all);
+			while ((AF->zr * AF->zr + AF->zi * AF->zi) < 4
+					&& ++(AF->iter) < AF->iter_max)
+			{
+				AF->t = AF->zr;
+				AF->zr = (AF->zr * AF->zr * AF->zr)
+					- 3 * AF->zr * (AF->zi * AF->zi) + AF->cr;
+				AF->zi = ((3 * (AF->t * AF->t)) * AF->zi)
+					- (AF->zi * AF->zi * AF->zi) + AF->ci;
+			}
+			if (AF->iter != AF->iter_max)
+				color_pixel(all, AF->iter);
+		}
+	}
+	return (0);
+}
+
+int			mandelbrot3(t_all *all)
+{
+	if (AH->init_fractal)
+		init_fractale(all);
+	AP->x = -1;
+	while (++(AP->x) < IMGW)
+	{
+		AP->y = -1;
+		while (++(AP->y) < IMGH)
+		{
+			init2(all);
+			while ((AF->zr * AF->zr + AF->zi * AF->zi) < 4
+					&& ++(AF->iter) < AF->iter_max)
+			{
+				AF->t = AF->zr;
+				AF->zr = (AF->zr * AF->zr * AF->zr * AF->zr)
+					- 6 * (AF->zr * AF->zr) * (AF->zi * AF->zi)
+					+ (AF->zi * AF->zi * AF->zi * AF->zi) + AF->cr;
+				AF->zi = 4 * (AF->t * AF->t * AF->t) * AF->zi
+					- 4 * AF->t * (AF->zi * AF->zi * AF->zi) + AF->ci;
+			}
+			if (AF->iter != AF->iter_max)
+				color_pixel(all, AF->iter);
 		}
 	}
 	return (0);

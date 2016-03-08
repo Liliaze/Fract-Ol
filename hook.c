@@ -6,99 +6,55 @@
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/16 13:57:50 by dboudy            #+#    #+#             */
-/*   Updated: 2016/03/04 18:38:17 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/03/07 12:30:36 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-static int	change_nb_iter(t_all *all, int key)
-{
-	if (key == 24 && AF->iter_max < 50000)
-		AF->iter_max *= 1.5;
-	else
-		AF->iter_max -= 100.0;
-	return (0);
-}
-
 static int	key_press(int key, t_all *all)
 {
 	if (key == ECHAP)
-		error(all, "Thanks, good bye !", 0);
-	else if (key == 3 && AH->active_color == 1)
-		AH->active_color = 0;
-	else if (key == 3)
-		AH->active_color = 1;
-	else if (key == SPACE && AH->active_motion == 1)
-		AH->active_motion = 0;
-	else if (key == SPACE)
+		error("Thanks, good bye !", 0);
+	else if (!all->in_menu && key == SPACE && AH->active_motion == 0)
 		AH->active_motion = 1;
+	else if (!all->in_menu && key == SPACE)
+		AH->active_motion = 0;
+	else if (key == 8 && AH->active_color == 0)
+		AH->active_color = 1;
+	else if (!all->in_menu && key == 8)
+		AH->active_color = 0;
 	else if (key == ENTER)
-		launch_menu(all);
-	else if (all->in_menu && (key >= ONE && key <= NINE))
-		launch_fractale(all, key);
-	else if (key == 27 || key == 24)
-		change_nb_iter(all, key);
-	else if (key == LEFT || key == RIGHT || key == UP || key == DOWN)
+		launch_fractale_or_menu(all);
+	else if (!all->in_menu && (key == 47 || key == 43 || (key >= ONE2 &&
+				key <= THREE2) || (key >= ONE && key <= THREE)))
+		change_nb_iter_or_power(all, key);
+	else if (!all->in_menu && AF->choose_fractal != 4 && (key == LEFT ||
+				key == RIGHT || key == UP || key == DOWN))
 		move_fractale(all, key);
-	else if (key == MORE || key == LESS)
+	else if (!all->in_menu && (key == LEFT || key == RIGHT ||
+				key == UP || key == DOWN))
+		move_fractale2(all, key);
+	else if (!all->in_menu && (key == MORE || key == LESS))
 		to_zoom(all, key);
-	if (key != ENTER)
-		refresh(all);
 	return (0);
 }
 
 static int	mouse(int button, int x, int y, t_all *all)
 {
-	if (button == 6 || button == 7)
+	if (!all->in_menu && button == 1 && x > 0 && x < 800 && y > 0 && y < 800)
+	{
+		COLOR = (x * x + y * y) / y * x;
+		refresh(all);
+	}
+	else if (!all->in_menu && button == 1 && x > 0 && x < 800
+			&& y > 800 && y < 900)
+	{
+		choose_color(all);
+		AH->button1 = 1;
+	}
+	else if (!all->in_menu && (button == 6 || button == 7))
 		to_zoom(all, button);
-	x = y;
-	refresh(all);
-	return (0);
-}
-
-static int	paint_motion(int x, int y, t_all *all)
-{
-	if (AH->active_color_paint && x > 0 && y > 0)
-	{
-		if (y < 40)
-			COLOR = BROWN + x;
-		else if (y >= 40 && y < 80)
-			COLOR = RED + x;
-		else if (y >= 80 && y < 120)
-			COLOR = ORANGE + x;
-		else if (y >= 120 && y < 160)
-			COLOR = YELLOW + x;
-		else if (y >= 160 && y < 200)
-			COLOR = CYAN - x;
-		else if (y >= 200 && y < 240)
-			COLOR = BLUEF - x;
-	}
-	refresh(all);
-	return (0);
-}
-
-static int	mouse_paint(int button, int x, int y, t_all *all)
-{
-	if (button == 1 && AH->active_color_paint == 0)
-	{
-		AH->active_color_paint = 1;
-		if (y < 40)
-			COLOR = BROWN + x;
-		else if (y >= 40 && y < 80)
-			COLOR = RED + x;
-		else if (y >= 80 && y < 120)
-			COLOR = ORANGE + x;
-		else if (y >= 120 && y < 160)
-			COLOR = YELLOW + x;
-		else if (y >= 160 && y < 200)
-			COLOR = CYAN - x;
-		else if (y >= 200 && y < 240)
-			COLOR = BLUEF - x;
-	}
-	else
-		AH->active_color_paint = 0;
-	refresh(all);
 	return (0);
 }
 
@@ -106,12 +62,15 @@ static int	mouse_motion(int x, int y, t_all *all)
 {
 	AH->mouse_x = x;
 	AH->mouse_y = y;
-	if (AH->active_motion && x != 0 && y != 0)
+	if (!all->in_menu && AH->active_motion)
 	{
-		AH->motion_x = (x + y) / ((ZOOMX + ZOOMY) * 2);
+		AH->motion = (x + y - 200) / (ZOOMX + ZOOMY);
 		refresh(all);
 	}
-	else if (AH->active_color && x != 0 && y != 0)
+	if (!all->in_menu && (AH->active_color || AH->button1)
+			&& x > 0 && x < 800 && y > 800 && y < 900)
+		choose_color(all);
+	else if (!all->in_menu && AH->active_color)
 	{
 		COLOR = (x * x + y * y) * 50;
 		refresh(all);
@@ -119,13 +78,23 @@ static int	mouse_motion(int x, int y, t_all *all)
 	return (0);
 }
 
-int		ft_loop(t_all	*all)
+static int	mouse_stop(int button, int x, int y, t_all *all)
 {
-	mlx_hook(WIN, 2, (1L<<0), key_press, all);
-	mlx_hook(WIN, 4, (1L<<2), mouse, all);
-	mlx_hook(all->apaint->win, 4, (1L<<2), mouse_paint, all);
-	mlx_hook(all->apaint->win, 6, (1L<<8), paint_motion, all);
-	mlx_hook(WIN, 6, (1L<<8), mouse_motion, all);
+	if (!all->in_menu && button == 1)
+	{
+		AH->button1 = 0;
+		AH->mouse_x = x;
+		AH->mouse_y = y;
+	}
+	return (1);
+}
+
+int			ft_loop(t_all *all)
+{
+	mlx_hook(WIN, 2, (1L << 0), key_press, all);
+	mlx_hook(WIN, 4, (1L << 2), mouse, all);
+	mlx_hook(WIN, 5, (1L << 3), mouse_stop, all);
+	mlx_hook(WIN, 6, (1L << 8), mouse_motion, all);
 	mlx_loop(MLX);
 	return (0);
 }

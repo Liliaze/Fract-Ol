@@ -6,7 +6,7 @@
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/03 15:37:34 by dboudy            #+#    #+#             */
-/*   Updated: 2016/03/03 18:51:43 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/03/07 11:53:30 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ static void	init1(t_all *all)
 {
 	AH->init_fractal = 0;
 	AF->iter_max = 350;
-	ZOOMX = WINW / 2.7;
-	ZOOMY = WINH / 2.4;
+	ZOOMX = IMGW / 2.7;
+	ZOOMY = IMGH / 2.4;
 	AF->x1 = -2.1;
 	AF->x2 = 0.6;
 	AF->y1 = -1.2;
@@ -26,33 +26,31 @@ static void	init1(t_all *all)
 
 static void	init2(t_all *all)
 {
-	AF->c_r = (AP->x / ZOOMX + AF->x1);
-	AF->c_i = (AP->y / ZOOMY + AF->y1);
-	AF->z_r = 0 + AH->motion_x;
-	AF->z_i = 0 + AH->motion_x;
+	AF->cr = (AP->x / ZOOMX + AF->x1);
+	AF->ci = (AP->y / ZOOMY + AF->y1);
+	AF->zr = 0 + AH->motion;
+	AF->zi = 0 + AH->motion;
 	AF->iter = -1;
 }
 
 int			burnship(t_all *all)
 {
-	double	tmp;
-
 	if (AH->init_fractal)
 		init1(all);
 	AP->x = -1;
-	while (++(AP->x) < WINW)
+	while (++(AP->x) < IMGW)
 	{
 		AP->y = -1;
-		while (++(AP->y) < WINH)
+		while (++(AP->y) < IMGH)
 		{
 			init2(all);
-			while (sqrt(AF->z_r * AF->z_r + AF->z_i * AF->z_i) < 4
+			while (sqrt(AF->zr * AF->zr + AF->zi * AF->zi) < 4
 					&& ++(AF->iter) < AF->iter_max)
 			{
-				tmp = AF->z_r;
-				AF->z_r = fabs(AF->z_r * AF->z_r - AF->z_i * AF->z_i
-						+ AF->c_r);
-				AF->z_i = fabs(2 * AF->z_i * tmp + AF->c_i);
+				AF->t = AF->zr;
+				AF->zr = fabs(AF->zr * AF->zr - AF->zi * AF->zi
+						+ AF->cr);
+				AF->zi = fabs(2 * AF->zi * AF->t + AF->ci);
 			}
 			if (AF->iter != AF->iter_max && (AP->pixel = (AP->y * SIZE_LINE
 							+ AP->x * BPP)) < LAST_PIXEL && AP->pixel >= 0)

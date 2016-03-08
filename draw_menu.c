@@ -6,7 +6,7 @@
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/10 16:59:19 by dboudy            #+#    #+#             */
-/*   Updated: 2016/03/04 18:38:14 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/03/05 20:02:47 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 static void	draw_arc(t_all *all)
 {
-	int		y;
-	int		x;
-	float	d;
-	float	e;
-	float	gap;
+	int	y;
+	int	x;
+	int	d;
+	int	e;
+	int	gap;
 
 	d = WINW * 0.18;
 	e = (WINW - 2 * d) / 2;
@@ -30,13 +30,13 @@ static void	draw_arc(t_all *all)
 		{
 			gap = (d - x) * (d - x) + (d - y) * (d - y);
 			if (gap < d * d * 0.5 && gap > d * d * 0.4)
-				mlx_pixel_put(MLX, WIN, x + e, y + e * 0.3, BLUEF);
+				mlx_pixel_put(MLX, WIN, x + e, 50 + y + e * 0.3, BLUEF);
 			else if (gap < d * d * 0.6 && gap > d * d * 0.4)
-				mlx_pixel_put(MLX, WIN, x + e, y + e * 0.3, GREENF);
+				mlx_pixel_put(MLX, WIN, x + e, 50 + y + e * 0.3, GREENF);
 			else if (gap < d * d * 0.7 && gap > d * d * 0.4)
-				mlx_pixel_put(MLX, WIN, x + e, y + e * 0.3, ORANGE);
+				mlx_pixel_put(MLX, WIN, x + e, 50 + y + e * 0.3, ORANGE);
 			else if (gap < d * d * 0.8 && gap > d * d * 0.4)
-				mlx_pixel_put(MLX, WIN, x + e, y + e * 0.3, RED);
+				mlx_pixel_put(MLX, WIN, x + e, 50 + y + e * 0.3, RED);
 		}
 	}
 }
@@ -68,49 +68,32 @@ static void	draw_background(t_all *all)
 
 static int	draw_str_menu(t_all *all)
 {
-	char	*enter;
-
-	enter = "Please the NUMBER of your fractal.";
-	mlx_string_put(MLX, WIN, (WINW - ft_strlen("WELCOME :D") * 10) / 2,
-			(WINH / 2) - 90, PINK, "WELCOME :D");
-	mlx_string_put(MLX, WIN, (WINW - ft_strlen(enter) * 10) / 2, WINH / 2,
-			RED, enter);
-	mlx_string_put(MLX, WIN, (WINW - 140) / 2,
-				WINH / 2 + 30, GREEN, "1 - Mandelbrot");
-	mlx_string_put(MLX, WIN, (WINW - 150) / 2,
-				WINH / 2 + 60, GREEN, "2 - Mandelbrot2");
-	mlx_string_put(MLX, WIN, (WINW - 150) / 2,
-				WINH / 2 + 90, GREEN, "3 - Mandelbrot3");
-	mlx_string_put(MLX, WIN, (WINW - 90) / 2,
-				WINH / 2 + 120, GREEN, "4 - Julia");
 	mlx_string_put(MLX, WIN, (WINW - 100) / 2,
-				WINH / 2 + 150, GREEN, "5 - Julia2");
-	mlx_string_put(MLX, WIN, (WINW - 100) / 2,
-				WINH / 2 + 180, GREEN, "6 - Julia3");
-	mlx_string_put(MLX, WIN, (WINW - 250) / 2,
-				WINH / 2 + 210, GREEN, "7 - Triangle de Siepinski");
-	mlx_string_put(MLX, WIN, (WINW - 120) / 2,
-				WINH / 2 + 240, GREEN, "8 - Burnship");
-	mlx_string_put(MLX, WIN, (WINW - 150) / 2,
-				WINH / 2 + 270, GREEN, "9 - in progress");
+			(WINH / 2) - 120, PINK, "WELCOME :D");
+	mlx_string_put(MLX, WIN, (WINW - 240) / 2,
+			WINH / 2 - 90, PINK, "IN THE WORLD OF FRACTALS");
+	mlx_string_put(MLX, WIN, (WINW - 290) / 2, WINH / 2 - 30, RED,
+			"====== ENTER TO START ======");
+	mlx_string_put(MLX, WIN, (WINW - ft_strlen(AF->name) * 10) / 2,
+			WINH / 2, YELLOW, AF->name);
+	mlx_string_put(MLX, WIN, (WINW - 140) / 2, WINH / 2 + 60, GREEN,
+			"ARROWS to move");
+	mlx_string_put(MLX, WIN, (WINW - 380) / 2, WINH / 2 + 90, GREEN,
+			"'-' or '+' of keypad or MOUSE to zoom");
+	mlx_string_put(MLX, WIN, (WINW - 380) / 2, WINH / 2 + 120, GREEN,
+			"'<' or '>' to change nb of iteration");
+	mlx_string_put(MLX, WIN, (WINW - 230) / 2, WINH / 2 + 150, GREEN,
+			"SPACE to active motion");
+	mlx_string_put(MLX, WIN, (WINW - 290) / 2, WINH / 2 + 180, GREEN,
+			"C to active my special mode");
+	mlx_string_put(MLX, WIN, (WINW - 310) / 2, WINH / 2 + 210, GREEN,
+			"'1', '2', '3' to change power");
 	return (0);
 }
 
 int			launch_menu(t_all *all)
 {
 	all->in_menu = 1;
-	mlx_clear_window(MLX, WIN);
-	COLOR = BLUE;
-	ZOOMX = 1;
-	ZOOMY = 1;
-	AH->motion_x = 0;
-	AH->motion_y = 0;
-	AH->mouse_x = 0;
-	AH->mouse_y = 0;
-	AH->move_x = 0;
-	AH->move_y = 0;
-	AH->zoom_x = 0;
-	AH->zoom_y = 0;
 	draw_background(all);
 	draw_arc(all);
 	draw_str_menu(all);

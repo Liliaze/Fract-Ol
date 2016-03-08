@@ -6,33 +6,26 @@
 /*   By: dboudy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/16 14:05:51 by dboudy            #+#    #+#             */
-/*   Updated: 2016/03/04 10:43:09 by dboudy           ###   ########.fr       */
+/*   Updated: 2016/03/07 12:23:29 by dboudy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-double	p(double nb, int power)
-{
-	double tmp;
-
-	tmp = nb;
-	while (--power > 0)
-		nb *= tmp;
-	return (nb);
-}
-
-int	color_pixel(t_all *all, int data)
+int		color_pixel(t_all *all, int data)
 {
 	int pixel;
-   
-	pixel = AP->y * SIZE_LINE + AP->x * BPP;
-   	if (pixel < LAST_PIXEL && pixel > 0)
-		((int *)DATA)[pixel] = COLOR * data;
+
+	if (AP->y < 600 && AP->x < 600 && AP->y > 0 && AP->x > 0)
+	{
+		pixel = AP->y * SIZE_LINE + AP->x * BPP;
+		if (pixel < LAST_PIXEL && pixel > 0)
+			((int *)DATA)[pixel] = COLOR * data;
+	}
 	return (0);
 }
 
-int	clear_image(t_all *all)
+int		clear_image(t_all *all)
 {
 	int	i;
 
@@ -42,17 +35,19 @@ int	clear_image(t_all *all)
 	return (0);
 }
 
-int	error(t_all	*all, char *text, int code_error)
+void	error(char *text, int code_error)
 {
 	if (code_error == 0)
 	{
-		ft_putstr(text);
+		ft_trace_str("31", text);
+		ft_putstr("\n");
 		exit(1);
 	}
-	else
+	else if (code_error == 3)
 	{
-		mlx_clear_window(MLX, WIN);
-		mlx_string_put(MLX, WIN, (WINW - ft_strlen(text) * 12) / 2, WINH / 2, PINK, text);
+		ft_trace_str("32", "Les arguments disponibles sont :\n");
+		ft_trace_str("33", "{Mandelbrot || Julia || Burnship || Siepinski}\n");
+		ft_trace_str("34", "Enjoy ;)\n");
+		exit(1);
 	}
-	return (0);
 }
